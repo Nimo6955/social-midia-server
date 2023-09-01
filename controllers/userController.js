@@ -1,5 +1,7 @@
 const User = require("../models/User");
 const { success, error } = require("../Utils/responseWrapper");
+const Post = require("../models/Post");
+
 
 
 
@@ -10,6 +12,10 @@ const followOrUnfollowUserController = async (req, res)=>{
     
         const userToFollow = await User.findById(userIdToFollow)
         const curUser = await User.findById(curUserId)
+
+        if(curUserId === userIdToFollow){
+            return res.send(error(409, 'users cannot follow themselvs'))  
+        }
         if(!userToFollow){
             return res.send(error(404, 'user to follow not found'));
         }
@@ -38,10 +44,30 @@ const followOrUnfollowUserController = async (req, res)=>{
         return res.send(error(500, e.message))
         
     }
+    
+    
+}
 
+const getPostOfFollowing = async (req, res)=>{
+    try {
+        
+        const curUserId = req._id
 
+        const curUser = await User.findById(curUserId)
+
+        const posts = await Post.find({
+            'owner':{
+                '$in': curUser.followings
+            }
+        })
+        return res.send(success(200, posts))
+    } catch (e) {
+        console.log(e);
+        return res.send(error(500, e.message))
+    }
 }
 
 module.exports = {
-    followOrUnfollowUserController
+    followOrUnfollowUserController,
+    getPostOfFollowing
 }

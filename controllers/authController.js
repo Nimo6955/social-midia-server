@@ -93,7 +93,21 @@ const refreshAccessTokenControllerApi = async (req, res) => {
         // return res.status(401).send('Invalid refresh token')
         return res.send(error(401, 'Invalid refresh token'))
     }
+};
+
+const logOutController = async (req, res) => {
+        try {
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                secure: true,
+               })
+               res.send(success(200, 'User logged out'))
+        } catch (error) {
+            return res.send(error(500, e.message))
+
+        }
 }
+
 
 // Internal functions => not going to be exported
 const generateAccessToken = (data) =>{
@@ -123,5 +137,5 @@ const generateRefreshToken = (data) =>{
 }
 
 module.exports = {
-    signUpController,logInController,refreshAccessTokenControllerApi
+    signUpController,logInController,refreshAccessTokenControllerApi,logOutController
 }

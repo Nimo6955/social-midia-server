@@ -1,12 +1,7 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
-
 const { success, error } = require("../Utils/responseWrapper");
 
-const getAllPostController = async (req,res)=>{
-    console.log(req._id);
-    return res.send(success(201, 'These are all posts'))
-};
 
     const createPostController = async (req, res)=>{
     
@@ -62,6 +57,68 @@ const getAllPostController = async (req,res)=>{
     }
 }
 
+async function updetePostController(req, res){
+
+    try {
+        const {postId, caption} = req.body
+        const curUserId = req._id
+    
+        const post = await Post.findById(postId)
+        if(!post){
+            return res.send(error(404 , 'Post not found'))
+        }
+
+        if(post.owner.toString() !== curUserId){
+            res.send(error(403, 'Only owner can update their posts'))
+        }
+
+        if(caption){
+            post.caption = caption
+        }
+
+        await post.save()
+        return res.send(success(200, {post}))
+        
+    } catch (e) {
+        return res.send(error(500, e.message))
+        
+    }
+
+}
+
+const deletePost = async (req, res) => {
+    try {
+        
+        const {postId} = req.body 
+    
+        const curUserId = req._id
+    
+        const post = await Post.findById(postId)
+        const curUser = await User.findById(curUserId);   
+        if(!post){
+            return res.send(error(404 , 'Post not found'))
+        }
+    
+        if(post.owner.toString() !== curUserId){
+            res.send(error(403, 'Only owner can delete their posts'))
+        }
+        const index = curUser.posts.indexOf(postId);
+        curUser.posts.splice(index, 1);
+        await curUser.save();
+        console.log(post);
+        await Post.findByIdAndDelete(postId);
+    
+        return res.send(success(200, 'Post deleted successfully'))
+    } catch (e) {
+        console.log(e);
+        return res.send(error(500, e.message))
+
+    }
+
+
+}
+
+
 module.exports = {
-    getAllPostController,createPostController,likeAndUnlikePost
+  createPostController,likeAndUnlikePost,updetePostController,deletePost
 }
