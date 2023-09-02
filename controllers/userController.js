@@ -5,58 +5,58 @@ const Post = require("../models/Post");
 
 
 
-const followOrUnfollowUserController = async (req, res)=>{
+const followOrUnfollowUserController = async (req, res) => {
     try {
-        const {userIdToFollow} = req.body;
+        const { userIdToFollow } = req.body;
         const curUserId = (req._id);
-    
+
         const userToFollow = await User.findById(userIdToFollow)
         const curUser = await User.findById(curUserId)
 
-        if(curUserId === userIdToFollow){
-            return res.send(error(409, 'users cannot follow themselvs'))  
+        if (curUserId === userIdToFollow) {
+            return res.send(error(409, 'users cannot follow themselvs'))
         }
-        if(!userToFollow){
+        if (!userToFollow) {
             return res.send(error(404, 'user to follow not found'));
         }
-        if(curUser.followings.includes(userIdToFollow)){    
+        if (curUser.followings.includes(userIdToFollow)) {
             const followingIndex = curUser.followings.indexOf(userIdToFollow)
             curUser.followings.splice(followingIndex, 1)
-    
+
             const followerIndex = userToFollow.followers.indexOf(curUser)
             userToFollow.followers.splice(followerIndex, 1)
-    
+
             await userToFollow.save();
             await curUser.save();
-    
+
             res.send(success(200, 'User Unfollowed'))
-        }else{
+        } else {
             userToFollow.followers.push(curUserId);
             curUser.followings.push(userIdToFollow)
             await userToFollow.save();
             await curUser.save();
-    
+
             res.send(success(200, 'User followed'))
         }
-        
+
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
-        
+
     }
-    
-    
+
+
 }
 
-const getPostOfFollowing = async (req, res)=>{
+const getPostOfFollowing = async (req, res) => {
     try {
-        
+
         const curUserId = req._id
 
         const curUser = await User.findById(curUserId)
 
         const posts = await Post.find({
-            'owner':{
+            'owner': {
                 '$in': curUser.followings
             }
         })
@@ -67,7 +67,93 @@ const getPostOfFollowing = async (req, res)=>{
     }
 }
 
+const getMyPosts = async (req, res) => {
+    try {
+        const curUserId = req._id
+        const allUserPosts = await Post.find({
+            owner: curUserId
+        }).populate('likes')
+        return res.send(success(200, { allUserPosts }))
+
+    } catch (e) {
+        return res.send(error(500, e.message))
+
+    }
+}
+
+const getUserPosts = async (req, res) => {
+    try {
+        const userId = req.body.userId
+        if (!userId) {
+            res.send(error(400, 'UserId is required'))
+        }
+        const allUserPosts = await Post.find({
+            owner: userId
+        }).populate('likes')
+        return res.send(success(200, { allUserPosts }))
+
+    } catch (e) {
+        return res.send(error(500, e.message))
+
+    }
+
+}
+
+const deletMyProfile = async (req, res) => {
+
+    try {
+
+
+        const curUserId = req._id
+        const curUser = await User.findById(curUserId);
+
+        // delete all posts
+        await Post.deleteMany({
+            owner: curUserId
+        })
+
+        // remove myself from my following, followers
+
+        curUser.followers.forEach(async (followerId) => {
+            const follower = await User.findById(followerId);
+            const index = follower.followings.indexOf(curUserId);
+            follower.followings.splice(index, 1)
+            await follower.save()
+        })
+        // remove myself from my followers, following
+        curUser.followings.forEach(async (followingId) => {
+            const following = await User.findById(followingId);
+            const index = following.followers.indexOf(curUserId);
+            following.followers.splice(index, 1)
+            await following.save()
+        })
+
+        // remove myself from all likes
+        const allPosts = await Post.find()
+        allPosts.forEach(async (post) => {
+            const index = post.likes.indexOf(curUserId);
+            post.likes.splice(index, 1);
+            await post.save();
+        })
+
+        // delete user
+        await User.deleteOne(curUser);
+
+        res.clearCookie('jwt', {
+            httpOnly: true,
+            secure: true,
+           })
+           return res.send(success(200, 'User deleted'))
+    } catch (e) {
+        return res.send(error(500, e.message))
+    }
+}
+
+
 module.exports = {
     followOrUnfollowUserController,
-    getPostOfFollowing
+    getPostOfFollowing,
+    getMyPosts,
+    getUserPosts,
+    deletMyProfile
 }

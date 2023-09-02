@@ -18,11 +18,10 @@ module.exports = async (req, res, next) => {
         req._id = decoded.id;
 
 
-        // const user = await User.findOne(req._id);
-        // if(!user) {
-        //     return res.send(error(404, 'User not found'));
-        // }
-        // console.log(user);
+        const user = await User.findById(req._id);
+        if(!user) {
+            return res.send(error(404, 'User not found'));
+        }
     } catch (e) {
         console.log(e);
         // return res.status(401).send('Invalid access key')        

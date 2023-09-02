@@ -7,6 +7,10 @@ const { success, error } = require("../Utils/responseWrapper");
     
     try {
         const { caption } = req.body;
+        if(!caption){
+            res.send(error(400, 'caption is required'))
+
+        }
         const owner =  (req._id);   
         const user = await User.findById(req._id);   
 
