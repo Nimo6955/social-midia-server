@@ -18,7 +18,7 @@ const { Schema } = mongoose;
     },
     name: {
         type: String,
-        // required: true
+        required: true
     },
     bio: {
         type: String,

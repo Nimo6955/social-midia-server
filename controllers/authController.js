@@ -56,8 +56,8 @@ const logInController = async (req, res) =>{
         return res.send(error(403, 'Incorrect Password'))
        }
 
-       const accessToken = generateAccessToken({id: user._id,})
-       const refreshToken = generateRefreshToken({id: user._id,})
+       const accessToken = generateAccessToken({_id: user._id,})
+       const refreshToken = generateRefreshToken({_id: user._id,})
 
 
        res.cookie('jwt', refreshToken, {

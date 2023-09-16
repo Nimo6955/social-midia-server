@@ -15,8 +15,9 @@ module.exports = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_PRIVATE_KEY)
-        req._id = decoded.id;
+        req._id = decoded._id;
 
+        // console.log(decoded , 'decoded');
 
         const user = await User.findById(req._id);
         if(!user) {
