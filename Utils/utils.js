@@ -9,7 +9,7 @@ const mapPosOutput = (post, userId) =>{
             avatar: post.owner.avatar,
 
         },
-        lieksCount: post.likes.length,
+        likesCount: post.likes.length,
         isLiked: post.likes.includes(userId)
     }
 }

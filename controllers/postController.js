@@ -1,6 +1,7 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
 const { success, error } = require("../Utils/responseWrapper");
+const { mapPosOutput } = require("../Utils/utils");
 const cloudinary = require("cloudinary").v2;
 
 
@@ -32,7 +33,7 @@ const cloudinary = require("cloudinary").v2;
         user.posts.push(post._id);
         await user.save();
 
-        return res.send(success(201, post))
+        return res.send(success(200, {post}))
     } catch (e) {
          return res.send(error(500, e.message))
     }
@@ -45,7 +46,7 @@ const cloudinary = require("cloudinary").v2;
         const {postId} = req.body
         const curUserId = (req._id)
     
-        const post = await Post.findById(postId);
+        const post = await Post.findById(postId).populate('owner');
         if(!post){
             return res.send(error(400, 'Post not found'))
         }
@@ -53,17 +54,12 @@ const cloudinary = require("cloudinary").v2;
         if(post.likes.includes(curUserId)){
             const index = post.likes.indexOf(curUserId)
             post.likes.splice(index, 1);
-    
-            await post.save();
-            return res.send(success(200, 'Post Unliked'))
         }
         else{
-            console.log(curUserId);
             post.likes.push(curUserId);
-            await post.save()
-            return res.send(success(200, 'Post Liked'))
-
         }
+        await post.save();
+        return res.send(success(200, {post: mapPosOutput(post , req._id)}))
         
     } catch (e) {
         console.log(e);

@@ -9,6 +9,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+ },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.40.0",
