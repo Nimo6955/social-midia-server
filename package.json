@@ -12,7 +12,7 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
- },
+  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.40.0",
@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.1",
     "mongoose": "^7.4.3",
     "morgan": "^1.10.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "time-ago": "^0.2.1"
   }
 }

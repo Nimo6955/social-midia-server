@@ -26,7 +26,9 @@ const signUpController = async (req, res) =>{
         email,
         password: hashedPassword,
        });
-    return res.send(success(201,{user}))
+       const accessToken = generateAccessToken({_id: user._id,})
+
+    return res.send(success(201,{user, accessToken}))
 
 
     } catch (e) {
