@@ -69,6 +69,7 @@ const getPostOfFollowing = async (req, res) => {
                 '$nin': followingsIds
             }
         })
+        suggestions.splice(4)
 
         return res.send(success(200, {...curUser._doc, suggestions, posts}))
     } catch (e) {

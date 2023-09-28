@@ -96,29 +96,30 @@ async function updetePostController(req, res){
 
 }
 
-const deletePost = async (req, res) => {
+async function deletePost(req, res){
     try {
         
-        const {postId} = req.body 
-    
+        const {postId} = req.body
+        
         const curUserId = req._id
     
-        const post = await Post.findById(postId)
+        const post = await Post.findById(postId).populate('owner')
         const curUser = await User.findById(curUserId);   
         if(!post){
             return res.send(error(404 , 'Post not found'))
         }
     
-        if(post.owner.toString() !== curUserId){
+        if(post.owner._id.toString() != curUserId){
             res.send(error(403, 'Only owner can delete their posts'))
         }
         const index = curUser.posts.indexOf(postId);
         curUser.posts.splice(index, 1);
-        await curUser.save();
-        console.log(post);
+
         await Post.findByIdAndDelete(postId);
+        await curUser.save();
+
     
-        return res.send(success(200, 'Post deleted successfully'))
+        return res.send(success(200,  {post: mapPosOutput(post , req._id)}))
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
