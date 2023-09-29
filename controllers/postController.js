@@ -70,24 +70,29 @@ const cloudinary = require("cloudinary").v2;
 async function updetePostController(req, res){
 
     try {
-        const {postId, caption} = req.body
+        const {postId, caption, postImg} = req.body
         const curUserId = req._id
     
-        const post = await Post.findById(postId)
+        const post = await Post.findById(postId).populate('owner')
         if(!post){
             return res.send(error(404 , 'Post not found'))
         }
 
-        if(post.owner.toString() !== curUserId){
+        if(post.owner._id
+            .toString() !== curUserId){
             res.send(error(403, 'Only owner can update their posts'))
         }
 
         if(caption){
             post.caption = caption
         }
+        if(postImg){
+            post.image.url = postImg
+        }
 
         await post.save()
-        return res.send(success(200, {post}))
+        console.log(post);
+        return res.send(success(200, {post: mapPosOutput(post , req._id)}))
         
     } catch (e) {
         return res.send(error(500, e.message))
