@@ -15,7 +15,13 @@ const mapPosOutput = (post, userId) =>{
         timeAgo: ta.ago(post.createdAt)
     }
 }
-
+// const mapbookmark = (curUser, postId) =>{
+//     return {
+//         _id: curUser._id,
+//         bookmarked: curUser.bookmarks.includes(postId)
+//     }
+// }
 module.exports = {
-    mapPosOutput
+    mapPosOutput,
+    // mapbookmark
 }

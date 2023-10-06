@@ -44,6 +44,12 @@ const { Schema } = mongoose;
             type: mongoose.Schema.Types.ObjectId,
             ref: 'post'
         }
+    ],
+    bookmarks:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'post'
+        }
     ]
 }, {
     timestamps: true

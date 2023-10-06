@@ -14,7 +14,7 @@ const followOrUnfollowUserController = async (req, res) => {
         const curUserId = (req._id);
 
         const userToFollow = await User.findById(userIdToFollow)
-        const curUser = await User.findById(curUserId)
+        const curUser = await User.findById(curUserId).populate('followers')
 
         if (curUserId === userIdToFollow) {
             return res.send(error(409, 'users cannot follow themselvs'))
@@ -51,8 +51,12 @@ const getPostOfFollowing = async (req, res) => {
 
         const curUserId = req._id
 
-        const curUser = await User.findById(curUserId).populate('followings')
-
+        const curUser = await User.findById(curUserId).populate('followings').populate('followers').populate({
+            path: 'bookmarks',
+            populate: {
+                path: 'owner'
+            }
+        })
         const fullPosts = await Post.find({
             owner: {
                 $in: curUser.followings
@@ -69,9 +73,16 @@ const getPostOfFollowing = async (req, res) => {
                 '$nin': followingsIds
             }
         })
-        suggestions.splice(4)
+        // suggestions.splice(4)
+        let shuffledSuggestions = suggestions
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)    
+    .map(({ value }) => value)
+   
+// console.log(shuffled)
+shuffledSuggestions.splice(4)
 
-        return res.send(success(200, {...curUser._doc, suggestions, posts}))
+        return res.send(success(200, {...curUser._doc, shuffledSuggestions, posts}))
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
@@ -207,7 +218,12 @@ const updateUserProfile = async (req, res) => {
             populate: {
                 path: 'owner'
             }
-        });
+        }).populate('followers').populate('followings').populate({
+            path: 'bookmarks',
+            populate: {
+                path: 'owner'
+            }
+        })
 
         const fullPosts = user.posts;
         const posts = fullPosts.map(item => mapPosOutput(item, req._id)).reverse();

@@ -1,7 +1,7 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
 const { success, error } = require("../Utils/responseWrapper");
-const { mapPosOutput } = require("../Utils/utils");
+const { mapPosOutput, mapbookmark } = require("../Utils/utils");
 const cloudinary = require("cloudinary").v2;
 
 
@@ -100,6 +100,36 @@ async function updetePostController(req, res){
     }
 
 }
+async function bookmarkPost(req, res) {
+    try {
+        const {postId} = req.body
+            
+        const curUserId = req._id
+    
+        const curUser = await User.findById(curUserId); 
+        const post = await Post.findById(postId).populate('owner')
+
+        if(curUser.bookmarks.includes(postId)){
+            const index = curUser.bookmarks.indexOf(postId)
+            curUser.bookmarks.splice(index, 1);
+        }
+        else{
+            curUser.bookmarks.push(postId);
+        }
+        
+        // await post.save()
+        await curUser.save()
+        
+        return res.send(success(200, {post: mapPosOutput(post , req._id)}))
+        
+    }
+     catch (e) {
+        return res.send(error(500, e.message))
+
+        
+     }
+        
+}
 
 async function deletePost(req, res){
     try {
@@ -136,5 +166,5 @@ async function deletePost(req, res){
 
 
 module.exports = {
-  createPostController,likeAndUnlikePost,updetePostController,deletePost
+  createPostController,likeAndUnlikePost,updetePostController,deletePost,bookmarkPost
 }
