@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
+const Comments = require("../models/comments");
 const { success, error } = require("../Utils/responseWrapper");
 const { mapPosOutput, mapbookmark } = require("../Utils/utils");
 const cloudinary = require("cloudinary").v2;
@@ -163,8 +164,43 @@ async function deletePost(req, res){
 
 
 }
+const commentOnPost = async (req, res) => {
+     
+    try {
+        const {postId, comment, image, name} = req.body
+            
+        const curUserId = req._id
+    
+        const post = await Post.findById(postId)
+        const curUser = await User.findById(curUserId); 
+
+        const cloudImg = await cloudinary.uploader.upload(image, {
+            folder: 'postImg'
+        })
+        const wantToComment = await Comments.create({
+            comment: comment,
+            commentsImage: {
+                publicId: cloudImg.public_id,
+                url: cloudImg.url
+            },
+            commentsName: name
+            
+        }); 
+    
+        post.comments.push(wantToComment)
+
+        await post.save()
+        await curUser.save()
+        return res.send(success(200 , {post: mapPosOutput(post , req._id)}))
+        
+    } catch (e) {
+        return res.send(error(500, e.message))
+        
+    }
+
+}
 
 
 module.exports = {
-  createPostController,likeAndUnlikePost,updetePostController,deletePost,bookmarkPost
+  createPostController,likeAndUnlikePost,updetePostController,deletePost,bookmarkPost,commentOnPost
 }

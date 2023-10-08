@@ -12,7 +12,8 @@ const mapPosOutput = (post, userId) =>{
         },
         likesCount: post.likes.length,
         isLiked: post.likes.includes(userId),
-        timeAgo: ta.ago(post.createdAt)
+        timeAgo: ta.ago(post.createdAt),
+        comments: post.comments
     }
 }
 // const mapbookmark = (curUser, postId) =>{
