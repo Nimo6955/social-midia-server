@@ -82,7 +82,7 @@ const getPostOfFollowing = async (req, res) => {
 // console.log(shuffled)
 shuffledSuggestions.splice(4)
 
-        return res.send(success(200, {...curUser._doc, shuffledSuggestions, posts}))
+        return res.send(success(200, {...curUser._doc, shuffledSuggestions,suggestions, posts}))
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
