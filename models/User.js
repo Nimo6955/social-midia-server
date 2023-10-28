@@ -14,7 +14,7 @@ const { Schema } = mongoose;
     password: {
         type: String,
         required: true,
-        // select: false
+        select: false
     },
     name: {
         type: String,
