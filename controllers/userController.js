@@ -67,22 +67,29 @@ const getPostOfFollowing = async (req, res) => {
         const posts = fullPosts.map((item) => mapPosOutput(item, req._id)).reverse();
         curUser.posts = posts
         const followingsIds = curUser.followings.map((item) => item._id);
+        let following = curUser.followings
         followingsIds.push(req._id);
+
         const suggestions = await User.find({
             '_id': {
                 '$nin': followingsIds
             }
         })
+        const AllUsers = await User.find()
+        AllUsers.pop(req._id)
         // suggestions.splice(4)
         let shuffledSuggestions = suggestions
     .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)    
+    .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value)
-   
-// console.log(shuffled)
 shuffledSuggestions.splice(4)
+let signUpSuggestions = suggestions
+signUpSuggestions = signUpSuggestions.filter((signUpSuggestions, idx) => idx < 4)
+signUpSuggestions.pop(following)
 
-        return res.send(success(200, {...curUser._doc, shuffledSuggestions,suggestions, posts}))
+
+
+        return res.send(success(200, {...curUser._doc, shuffledSuggestions,suggestions,AllUsers,signUpSuggestions, posts}))
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
