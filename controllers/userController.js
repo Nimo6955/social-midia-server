@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const { success, error } = require("../Utils/responseWrapper");
-const Post = require("../models/Post");  
+const Post = require("../models/Post");
 const { mapPosOutput } = require("../Utils/utils");
 const cloudinary = require("cloudinary").v2;
 
@@ -33,9 +33,9 @@ const followOrUnfollowUserController = async (req, res) => {
             curUser.followings.push(userIdToFollow)
         }
         await userToFollow.save();
-            await curUser.save();
+        await curUser.save();
 
-            return res.send(success(200, {user: userToFollow}))
+        return res.send(success(200, { user: userToFollow }))
 
     } catch (e) {
         console.log(e);
@@ -79,17 +79,58 @@ const getPostOfFollowing = async (req, res) => {
         AllUsers.pop(req._id)
         // suggestions.splice(4)
         let shuffledSuggestions = suggestions
-    .map(value => ({ value, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ value }) => value)
-shuffledSuggestions.splice(4)
-let signUpSuggestions = suggestions
-signUpSuggestions = signUpSuggestions.filter((signUpSuggestions, idx) => idx < 4)
-signUpSuggestions.pop(following)
+            .map(value => ({ value, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(({ value }) => value)
+        shuffledSuggestions.splice(4)
+        let signUpSuggestions = [
+            {
+                "avatar": {
+                    "publicId": "profileImg/lgesye3fkgmavlfwogz7",
+                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700216143/profileImg/lgesye3fkgmavlfwogz7.jpg"
+                },
+                "_id": "6557382b5a5555a97516aa91",
+                "email": "richard_roe@gmail.com",
+                "name": "Richard Roe ",
+
+            },
+            {
+                "avatar": {
+                    "publicId": "profileImg/whdlqua5hfn4ac4xvucd",
+                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700214421/profileImg/whdlqua5hfn4ac4xvucd.png"
+                },
+                "_id": "655736545a5555a97516aa7d",
+                "email": "john_doe@gmail.com",
+                "name": "john doe",
+            },
+            {
+                "avatar": {
+                    "publicId": "profileImg/kjjf9msnbpixylb5lvrf",
+                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700384704/profileImg/kjjf9msnbpixylb5lvrf.png"
+                },
+                "_id": "6559c9ce902bdcf94edf9df4",
+                "email": "ryu_lopez@gmail.com",
+                "name": "ryu Lopez",
+            },
+            {
+                "avatar": {
+                    "publicId": "profileImg/bnz6dcvcitmprhsz9rb9",
+                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700387540/profileImg/bnz6dcvcitmprhsz9rb9.png"
+                },
+                "_id": "6559dabff4579cd8d71c05d8",
+                "email": "luna_clementine@gmail.com",
+                "name": "Luna Clementine",
+
+            },
+
+        ]
+        // let signUpSuggestions = suggestions
+        // signUpSuggestions = signUpSuggestions.filter((signUpSuggestions, idx) => idx < 4)
+        // signUpSuggestions.pop(following)
 
 
 
-        return res.send(success(200, {...curUser._doc, shuffledSuggestions,suggestions,AllUsers,signUpSuggestions, posts}))
+        return res.send(success(200, { ...curUser._doc, shuffledSuggestions, suggestions, AllUsers, signUpSuggestions, posts }))
     } catch (e) {
         console.log(e);
         return res.send(error(500, e.message))
@@ -171,8 +212,8 @@ const deletMyProfile = async (req, res) => {
         res.clearCookie('jwt', {
             httpOnly: true,
             secure: true,
-           })
-           return res.send(success(200, 'User deleted'))
+        })
+        return res.send(success(200, 'User deleted'))
     } catch (e) {
         return res.send(error(500, e.message))
     }
@@ -181,24 +222,24 @@ const deletMyProfile = async (req, res) => {
 const getMyInfo = async (req, res) => {
     try {
         const user = await User.findById(req._id)
-        res.send(success(200, {user}))
+        res.send(success(200, { user }))
     } catch (e) {
         return res.send(error(500, e.message))
-        
+
     }
 }
 const updateUserProfile = async (req, res) => {
     try {
-        const {name, bio, userImg} = req.body;
+        const { name, bio, userImg } = req.body;
 
         const user = await User.findById(req._id);
-        if(name){
+        if (name) {
             user.name = name
         }
-        if(bio){
+        if (bio) {
             user.bio = bio
         }
-        if(userImg){
+        if (userImg) {
             const cloudImg = await cloudinary.uploader.upload(userImg, {
                 folder: 'profileImg'
             })
@@ -209,15 +250,15 @@ const updateUserProfile = async (req, res) => {
 
         }
         await user.save();
-    return res.send(success(200 , {user}))
-        
+        return res.send(success(200, { user }))
+
     } catch (e) {
-            return res.send(error(500, e.message))
-            
-        }
+        return res.send(error(500, e.message))
+
     }
-    
-    const getUserProfile = async (req, res) => {
+}
+
+const getUserProfile = async (req, res) => {
     try {
         const userId = req.body.userId
         const user = await User.findById(userId).populate({
@@ -235,11 +276,11 @@ const updateUserProfile = async (req, res) => {
         const fullPosts = user.posts;
         const posts = fullPosts.map(item => mapPosOutput(item, req._id)).reverse();
 
-        return res.send(success(200, {...user._doc, posts}))
+        return res.send(success(200, { ...user._doc, posts }))
 
     } catch (e) {
         return res.send(error(500, e.message))
-        
+
     }
 
 }
