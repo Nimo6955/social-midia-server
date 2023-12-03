@@ -89,15 +89,15 @@ const getPostOfFollowing = async (req, res) => {
                     "publicId": "profileImg/lgesye3fkgmavlfwogz7",
                     "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700216143/profileImg/lgesye3fkgmavlfwogz7.jpg"
                 },
-                "_id": "6557382b5a5555a97516aa91",
+                "_id": "656c613ddaf9f73029ba5895",
                 "email": "richard_roe@gmail.com",
                 "name": "Richard Roe ",
 
             },
             {
                 "avatar": {
-                    "publicId": "profileImg/whdlqua5hfn4ac4xvucd",
-                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1700214421/profileImg/whdlqua5hfn4ac4xvucd.png"
+                    "publicId": "profileImg/y47njqik2yr70ij9zly8",
+                    "url": "https://res.cloudinary.com/dgiigpirf/image/upload/v1701600436/profileImg/y47njqik2yr70ij9zly8.jpg"
                 },
                 "_id": "655736545a5555a97516aa7d",
                 "email": "john_doe@gmail.com",
@@ -119,7 +119,7 @@ const getPostOfFollowing = async (req, res) => {
                 },
                 "_id": "6559dabff4579cd8d71c05d8",
                 "email": "luna_clementine@gmail.com",
-                "name": "Luna Clementine",
+                "name": "Luna William",
 
             },
 
